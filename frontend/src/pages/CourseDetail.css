@@ -1,0 +1,218 @@
+.course-detail {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-btn:hover {
+  color: #e94560;
+}
+
+.course-hero {
+  background: #1a1a2e;
+  border-radius: 16px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.course-badges {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.course-hero h1 {
+  color: #fff;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.course-hero p {
+  color: #aaa;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.course-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.info-card {
+  background: #1a1a2e;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.info-label {
+  display: block;
+  color: #666;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.info-value {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.status-active {
+  color: #2ecc71;
+}
+
+.status-inactive {
+  color: #e74c3c;
+}
+
+.message {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.message.success {
+  background: rgba(46, 204, 113, 0.1);
+  border: 1px solid #2ecc71;
+  color: #2ecc71;
+}
+
+.message.error {
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+}
+
+.schedules-section h2 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.no-schedules {
+  color: #888;
+  text-align: center;
+  padding: 2rem;
+  background: #1a1a2e;
+  border-radius: 12px;
+}
+
+.schedules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.schedule-card {
+  background: #1a1a2e;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.schedule-date {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 200px;
+}
+
+.schedule-date .date {
+  color: #fff;
+  font-weight: 600;
+}
+
+.schedule-date .time {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.schedule-info {
+  flex: 1;
+}
+
+.spots {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.spots-available {
+  color: #e94560;
+  font-weight: 500;
+}
+
+.spots-total {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.progress-bar {
+  background: #333;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress {
+  background: linear-gradient(90deg, #e94560, #ff6b6b);
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.btn-book {
+  background: #e94560;
+  border: none;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  min-width: 120px;
+}
+
+.btn-book:hover:not(:disabled) {
+  background: #ff6b6b;
+}
+
+.btn-book:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .course-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .schedule-date {
+    min-width: auto;
+  }
+}
