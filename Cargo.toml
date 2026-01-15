@@ -34,3 +34,5 @@ time = "0.3.36"
 
 [dev-dependencies]
 actix-rt = "2"
+actix-http = "3"
+sqlx = { version = "0.7", features = ["runtime-tokio", "sqlite"] }
