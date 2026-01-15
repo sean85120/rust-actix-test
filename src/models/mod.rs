@@ -1,9 +1,13 @@
+pub mod announcement;
+pub mod blog;
 pub mod booking;
 pub mod course;
 pub mod member;
 pub mod membership_plan;
 pub mod schedule;
 
+pub use announcement::*;
+pub use blog::*;
 pub use booking::*;
 pub use course::*;
 pub use member::*;

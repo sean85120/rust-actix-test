@@ -1,11 +1,15 @@
+pub mod announcement_handler;
 pub mod auth_handler;
+pub mod blog_handler;
 pub mod booking_handler;
 pub mod course_handler;
 pub mod member_handler;
 pub mod membership_plan_handler;
 pub mod schedule_handler;
 
+pub use announcement_handler::*;
 pub use auth_handler::*;
+pub use blog_handler::*;
 pub use booking_handler::*;
 pub use course_handler::*;
 pub use member_handler::*;
@@ -86,6 +90,38 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
                     .route("/{id}", web::put().to(booking_handler::update_booking))
                     .route("/{id}/cancel", web::post().to(booking_handler::cancel_booking))
                     .route("/my", web::get().to(booking_handler::get_my_bookings)),
+            )
+            // Admin announcement routes
+            .service(
+                web::scope("/admin/announcements")
+                    .route("", web::get().to(announcement_handler::list_announcements))
+                    .route("", web::post().to(announcement_handler::create_announcement))
+                    .route("/{id}", web::get().to(announcement_handler::get_announcement))
+                    .route("/{id}", web::put().to(announcement_handler::update_announcement))
+                    .route("/{id}", web::delete().to(announcement_handler::delete_announcement))
+                    .route("/{id}/publish", web::post().to(announcement_handler::publish_announcement))
+                    .route("/{id}/archive", web::post().to(announcement_handler::archive_announcement)),
+            )
+            // Public announcement route (for authenticated users)
+            .route("/announcements", web::get().to(announcement_handler::get_active_announcements))
+            // Admin blog routes
+            .service(
+                web::scope("/admin/blog")
+                    .route("", web::get().to(blog_handler::list_blog_posts_admin))
+                    .route("", web::post().to(blog_handler::create_blog_post))
+                    .route("/{id}", web::get().to(blog_handler::get_blog_post_admin))
+                    .route("/{id}", web::put().to(blog_handler::update_blog_post))
+                    .route("/{id}", web::delete().to(blog_handler::delete_blog_post))
+                    .route("/{id}/publish", web::post().to(blog_handler::publish_blog_post))
+                    .route("/{id}/archive", web::post().to(blog_handler::archive_blog_post)),
+            )
+            // Public blog routes
+            .service(
+                web::scope("/blog")
+                    .route("", web::get().to(blog_handler::list_public_blog_posts))
+                    .route("/featured", web::get().to(blog_handler::get_featured_posts))
+                    .route("/recent", web::get().to(blog_handler::get_recent_posts))
+                    .route("/{slug}", web::get().to(blog_handler::get_public_blog_post)),
             ),
     );
 }

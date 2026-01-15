@@ -1,9 +1,13 @@
+pub mod announcement_repo;
+pub mod blog_repo;
 pub mod booking_repo;
 pub mod course_repo;
 pub mod member_repo;
 pub mod membership_plan_repo;
 pub mod schedule_repo;
 
+pub use announcement_repo::*;
+pub use blog_repo::*;
 pub use booking_repo::*;
 pub use course_repo::*;
 pub use member_repo::*;
@@ -172,6 +176,85 @@ pub async fn init_database(pool: &DbPool) -> Result<(), sqlx::Error> {
         .await?;
 
     sqlx::query("CREATE INDEX IF NOT EXISTS idx_bookings_schedule ON bookings(schedule_id)")
+        .execute(pool)
+        .await?;
+
+    // Create announcements table
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS announcements (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            priority TEXT NOT NULL DEFAULT 'normal',
+            status TEXT NOT NULL DEFAULT 'draft',
+            target_audience TEXT NOT NULL DEFAULT 'all',
+            author_id TEXT NOT NULL,
+            publish_date TEXT,
+            expiry_date TEXT,
+            is_pinned INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            FOREIGN KEY (author_id) REFERENCES members(id)
+        )
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
+    // Create blog_posts table
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS blog_posts (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            slug TEXT UNIQUE NOT NULL,
+            summary TEXT,
+            content TEXT NOT NULL,
+            category TEXT NOT NULL DEFAULT 'news',
+            tags TEXT,
+            featured_image_url TEXT,
+            author_id TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'draft',
+            publish_date TEXT,
+            is_featured INTEGER NOT NULL DEFAULT 0,
+            view_count INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            FOREIGN KEY (author_id) REFERENCES members(id)
+        )
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
+    // Create indexes for announcements
+    sqlx::query("CREATE INDEX IF NOT EXISTS idx_announcements_status ON announcements(status)")
+        .execute(pool)
+        .await?;
+
+    sqlx::query("CREATE INDEX IF NOT EXISTS idx_announcements_priority ON announcements(priority)")
+        .execute(pool)
+        .await?;
+
+    sqlx::query("CREATE INDEX IF NOT EXISTS idx_announcements_author ON announcements(author_id)")
+        .execute(pool)
+        .await?;
+
+    // Create indexes for blog_posts
+    sqlx::query("CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON blog_posts(status)")
+        .execute(pool)
+        .await?;
+
+    sqlx::query("CREATE INDEX IF NOT EXISTS idx_blog_posts_category ON blog_posts(category)")
+        .execute(pool)
+        .await?;
+
+    sqlx::query("CREATE INDEX IF NOT EXISTS idx_blog_posts_author ON blog_posts(author_id)")
+        .execute(pool)
+        .await?;
+
+    sqlx::query("CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug)")
         .execute(pool)
         .await?;
 
