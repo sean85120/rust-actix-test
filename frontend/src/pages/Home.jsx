@@ -40,16 +40,42 @@ const Home = () => {
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
-          <h1>Train Like a Champion</h1>
-          <p>Join our boxing gym and transform your fitness journey with expert trainers and world-class facilities.</p>
+          <h1>
+            Train Like
+            <span>A Champion</span>
+          </h1>
+          <p>
+            Unleash your potential with world-class boxing training.
+            Expert coaches, premium facilities, and a community that pushes you to greatness.
+          </p>
           {!isAuthenticated && (
             <div className="hero-buttons">
-              <Link to="/register" className="btn btn-primary">Get Started</Link>
-              <Link to="/courses" className="btn btn-secondary">View Courses</Link>
+              <Link to="/register" className="btn btn-primary">Start Training</Link>
+              <Link to="/courses" className="btn btn-secondary">Explore Classes</Link>
             </div>
           )}
         </div>
       </section>
+
+      {/* Stats Bar */}
+      <div className="stats-bar">
+        <div className="stat-item">
+          <div className="stat-number">500+</div>
+          <div className="stat-label">Active Members</div>
+        </div>
+        <div className="stat-item">
+          <div className="stat-number">15+</div>
+          <div className="stat-label">Expert Trainers</div>
+        </div>
+        <div className="stat-item">
+          <div className="stat-number">50+</div>
+          <div className="stat-label">Weekly Classes</div>
+        </div>
+        <div className="stat-item">
+          <div className="stat-number">10+</div>
+          <div className="stat-label">Years Experience</div>
+        </div>
+      </div>
 
       {/* Announcements */}
       {announcements.length > 0 && (
@@ -74,12 +100,12 @@ const Home = () => {
       <section className="courses-section">
         <div className="section-header">
           <h2>Popular Courses</h2>
-          <Link to="/courses" className="view-all">View All &rarr;</Link>
+          <Link to="/courses" className="view-all">View All →</Link>
         </div>
         <div className="courses-grid">
           {courses.map((course) => (
             <div key={course.id} className="course-card">
-              <div className="course-type">{course.course_type}</div>
+              <div className="course-type">{course.course_type.replace('_', ' ')}</div>
               <h3>{course.name}</h3>
               <p>{course.description}</p>
               <div className="course-meta">
@@ -101,7 +127,7 @@ const Home = () => {
         <section className="blog-section">
           <div className="section-header">
             <h2>Latest from the Blog</h2>
-            <Link to="/blog" className="view-all">View All &rarr;</Link>
+            <Link to="/blog" className="view-all">View All →</Link>
           </div>
           <div className="blog-grid">
             {recentPosts.map((post) => (
@@ -110,7 +136,7 @@ const Home = () => {
                 <h3>{post.title}</h3>
                 <p>{post.excerpt}</p>
                 <Link to={`/blog/${post.slug}`} className="read-more">
-                  Read More &rarr;
+                  Read More →
                 </Link>
               </div>
             ))}
@@ -120,27 +146,27 @@ const Home = () => {
 
       {/* Features Section */}
       <section className="features-section">
-        <h2>Why Choose Us?</h2>
+        <h2>Why Choose <span>Knockout</span>?</h2>
         <div className="features-grid">
           <div className="feature-card">
-            <div className="feature-icon">&#128170;</div>
+            <div className="feature-icon">🥊</div>
             <h3>Expert Trainers</h3>
-            <p>Learn from professional boxers and certified fitness instructors.</p>
+            <p>Learn from professional boxers and certified fitness instructors with years of competitive experience.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">&#127942;</div>
-            <h3>Modern Equipment</h3>
-            <p>Train with state-of-the-art boxing equipment and facilities.</p>
+            <div className="feature-icon">🏆</div>
+            <h3>Premium Equipment</h3>
+            <p>Train with top-tier boxing equipment, professional rings, and state-of-the-art fitness machines.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">&#128198;</div>
+            <div className="feature-icon">📅</div>
             <h3>Flexible Schedule</h3>
-            <p>Choose from a wide range of classes that fit your lifestyle.</p>
+            <p>Choose from a wide range of classes throughout the week that fit perfectly into your lifestyle.</p>
           </div>
           <div className="feature-card">
-            <div className="feature-icon">&#128101;</div>
-            <h3>Community</h3>
-            <p>Join a supportive community of boxing enthusiasts.</p>
+            <div className="feature-icon">💪</div>
+            <h3>Strong Community</h3>
+            <p>Join a supportive community of boxing enthusiasts who motivate and push each other to excel.</p>
           </div>
         </div>
       </section>
