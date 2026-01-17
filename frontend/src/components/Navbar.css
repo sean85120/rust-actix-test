@@ -3,48 +3,84 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--space-xl);
-  height: 80px;
-  background: rgba(10, 10, 15, 0.95);
-  backdrop-filter: blur(20px);
+  height: 85px;
+  background: rgba(10, 10, 15, 0.98);
+  backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 1000;
   transition: all var(--transition-base);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.navbar::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.navbar:hover::before {
+  transform: scaleX(1);
 }
 
 .navbar.scrolled {
-  height: 70px;
-  box-shadow: var(--shadow-lg);
+  height: 75px;
+  box-shadow:
+    var(--shadow-lg),
+    0 0 40px rgba(230, 57, 70, 0.1);
 }
 
 .navbar-brand a {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   font-family: var(--font-display);
-  font-size: 2rem;
-  letter-spacing: 3px;
+  font-size: 2.2rem;
+  letter-spacing: 4px;
   text-transform: uppercase;
   text-decoration: none;
   color: var(--text-primary);
-  transition: all var(--transition-fast);
+  transition: all var(--transition-base);
+  position: relative;
 }
 
 .navbar-brand a:hover {
-  color: var(--primary);
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 20px rgba(230, 57, 70, 0.6));
 }
 
 .navbar-brand .brand-icon {
-  width: 45px;
-  height: 45px;
+  width: 50px;
+  height: 50px;
   background: var(--gradient-primary);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+  font-size: 1.75rem;
+  box-shadow:
+    0 4px 15px rgba(230, 57, 70, 0.4),
+    0 0 0 2px var(--bg-dark),
+    0 0 0 3px var(--primary);
+  transition: all var(--transition-base);
+  animation: glow 3s ease-in-out infinite;
+}
+
+.navbar-brand a:hover .brand-icon {
+  transform: rotate(-10deg) scale(1.1);
+  box-shadow:
+    0 6px 25px rgba(230, 57, 70, 0.6),
+    0 0 0 2px var(--bg-dark),
+    0 0 0 4px var(--primary),
+    0 0 30px rgba(230, 57, 70, 0.5);
 }
 
 .navbar-menu {
@@ -285,20 +321,39 @@
 .btn-register {
   background: var(--gradient-primary);
   color: var(--text-primary);
-  padding: var(--space-sm) var(--space-lg);
-  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-xl);
+  border-radius: var(--radius-md);
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   transition: all var(--transition-base);
-  box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+  box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-register::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-register:hover::before {
+  left: 100%;
 }
 
 .btn-register:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(230, 57, 70, 0.4);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow:
+    0 8px 30px rgba(230, 57, 70, 0.6),
+    0 0 40px rgba(230, 57, 70, 0.3);
 }
 
 /* Mobile responsive */

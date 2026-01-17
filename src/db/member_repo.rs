@@ -215,13 +215,3 @@ pub async fn update_member_role(
 
     get_member_by_id(pool, member_id).await
 }
-
-pub async fn get_instructors(pool: &SqlitePool) -> Result<Vec<Member>, AppError> {
-    let members = sqlx::query_as::<_, Member>(
-        "SELECT * FROM members WHERE role = 'instructor' OR role = 'admin' ORDER BY first_name",
-    )
-    .fetch_all(pool)
-    .await?;
-
-    Ok(members)
-}

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { schedulesApi, coursesApi, membersApi } from '../../api/client';
 import Loading from '../../components/Loading';
 import Modal from '../../components/Modal';
 import '../Admin.css';
 
 const AdminSchedules = () => {
+  const { t, i18n } = useTranslation();
   const [schedules, setSchedules] = useState([]);
   const [courses, setCourses] = useState([]);
   const [instructors, setInstructors] = useState([]);
@@ -71,45 +73,46 @@ const AdminSchedules = () => {
     try {
       if (isCreating) {
         await schedulesApi.create(selectedSchedule);
-        setMessage({ type: 'success', text: 'Schedule created successfully!' });
+        setMessage({ type: 'success', text: t('admin.scheduleCreated') });
       } else {
         await schedulesApi.update(selectedSchedule.id, selectedSchedule);
-        setMessage({ type: 'success', text: 'Schedule updated successfully!' });
+        setMessage({ type: 'success', text: t('admin.scheduleUpdated') });
       }
       setIsModalOpen(false);
       fetchData();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Operation failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.operationFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
   const handleCancel = async (id) => {
-    if (!confirm('Are you sure you want to cancel this schedule?')) return;
+    if (!confirm(t('admin.cancelConfirmSchedule'))) return;
     try {
       await schedulesApi.cancel(id);
-      setMessage({ type: 'success', text: 'Schedule cancelled successfully!' });
+      setMessage({ type: 'success', text: t('admin.scheduleCancelled') });
       fetchData();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Cancel failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.cancelFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this schedule?')) return;
+    if (!confirm(t('admin.deleteConfirmSchedule'))) return;
     try {
       await schedulesApi.delete(id);
-      setMessage({ type: 'success', text: 'Schedule deleted successfully!' });
+      setMessage({ type: 'success', text: t('admin.scheduleDeleted') });
       fetchData();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Delete failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.deleteFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
   const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const locale = i18n.language === 'zh-TW' ? 'zh-TW' : 'en-US';
+    return new Date(dateStr).toLocaleDateString(locale, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -124,13 +127,17 @@ const AdminSchedules = () => {
     return `${hour12}:${minutes} ${ampm}`;
   };
 
+  const getStatusLabel = (status) => {
+    return t(`admin.statuses.${status}`, { defaultValue: status });
+  };
+
   if (loading) return <Loading />;
 
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <h1>Schedules Management</h1>
-        <button className="btn-add" onClick={handleCreate}>+ Add Schedule</button>
+        <h1>{t('admin.schedulesManagement')}</h1>
+        <button className="btn-add" onClick={handleCreate}>{t('admin.addSchedule')}</button>
       </div>
 
       {message.text && (
@@ -141,19 +148,19 @@ const AdminSchedules = () => {
         <table>
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Course</th>
-              <th>Instructor</th>
-              <th>Enrollment</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{t('admin.date')}</th>
+              <th>{t('admin.time')}</th>
+              <th>{t('admin.course')}</th>
+              <th>{t('admin.instructor')}</th>
+              <th>{t('admin.enrollment')}</th>
+              <th>{t('courses.status')}</th>
+              <th>{t('admin.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {schedules.length === 0 ? (
               <tr>
-                <td colSpan="7" className="empty-state">No schedules found</td>
+                <td colSpan="7" className="empty-state">{t('admin.noSchedulesFound')}</td>
               </tr>
             ) : (
               schedules.map((schedule) => (
@@ -165,21 +172,21 @@ const AdminSchedules = () => {
                   <td>{schedule.current_enrollment} / {schedule.max_participants}</td>
                   <td>
                     <span className={`status-badge ${schedule.status}`}>
-                      {schedule.status}
+                      {getStatusLabel(schedule.status)}
                     </span>
                   </td>
                   <td>
                     <div className="actions">
                       <button className="btn-action edit" onClick={() => handleEdit(schedule)}>
-                        Edit
+                        {t('admin.edit')}
                       </button>
                       {schedule.status === 'scheduled' && (
                         <button className="btn-action" onClick={() => handleCancel(schedule.id)}>
-                          Cancel
+                          {t('admin.cancel')}
                         </button>
                       )}
                       <button className="btn-action delete" onClick={() => handleDelete(schedule.id)}>
-                        Delete
+                        {t('admin.delete')}
                       </button>
                     </div>
                   </td>
@@ -193,31 +200,31 @@ const AdminSchedules = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={isCreating ? 'Create Schedule' : 'Edit Schedule'}
+        title={isCreating ? t('admin.createSchedule') : t('admin.editSchedule')}
       >
         {selectedSchedule && (
           <form onSubmit={handleSubmit} className="admin-form">
             <div className="form-group">
-              <label>Course</label>
+              <label>{t('admin.course')}</label>
               <select
                 value={selectedSchedule.course_id}
                 onChange={(e) => setSelectedSchedule({ ...selectedSchedule, course_id: e.target.value })}
                 required
               >
-                <option value="">Select a course</option>
+                <option value="">{t('admin.selectCourse')}</option>
                 {courses.map((course) => (
                   <option key={course.id} value={course.id}>{course.name}</option>
                 ))}
               </select>
             </div>
             <div className="form-group">
-              <label>Instructor</label>
+              <label>{t('admin.instructor')}</label>
               <select
                 value={selectedSchedule.instructor_id}
                 onChange={(e) => setSelectedSchedule({ ...selectedSchedule, instructor_id: e.target.value })}
                 required
               >
-                <option value="">Select an instructor</option>
+                <option value="">{t('admin.selectInstructor')}</option>
                 {instructors.map((instructor) => (
                   <option key={instructor.id} value={instructor.id}>
                     {instructor.first_name} {instructor.last_name}
@@ -226,7 +233,7 @@ const AdminSchedules = () => {
               </select>
             </div>
             <div className="form-group">
-              <label>Date</label>
+              <label>{t('admin.date')}</label>
               <input
                 type="date"
                 value={selectedSchedule.date}
@@ -236,7 +243,7 @@ const AdminSchedules = () => {
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label>Start Time</label>
+                <label>{t('admin.startTime')}</label>
                 <input
                   type="time"
                   value={selectedSchedule.start_time}
@@ -245,7 +252,7 @@ const AdminSchedules = () => {
                 />
               </div>
               <div className="form-group">
-                <label>End Time</label>
+                <label>{t('admin.endTime')}</label>
                 <input
                   type="time"
                   value={selectedSchedule.end_time}
@@ -255,7 +262,7 @@ const AdminSchedules = () => {
               </div>
             </div>
             <div className="form-group">
-              <label>Max Participants</label>
+              <label>{t('admin.maxParticipants')}</label>
               <input
                 type="number"
                 value={selectedSchedule.max_participants}
@@ -267,10 +274,10 @@ const AdminSchedules = () => {
             </div>
             <div className="form-actions">
               <button type="button" className="btn-cancel-form" onClick={() => setIsModalOpen(false)}>
-                Cancel
+                {t('admin.cancel')}
               </button>
               <button type="submit" className="btn-save">
-                {isCreating ? 'Create' : 'Save Changes'}
+                {isCreating ? t('admin.create') : t('admin.saveChanges')}
               </button>
             </div>
           </form>

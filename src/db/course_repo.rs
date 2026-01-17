@@ -166,22 +166,3 @@ pub async fn list_courses(
 
     Ok((courses, total.0))
 }
-
-pub async fn update_enrollment_count(
-    pool: &SqlitePool,
-    course_id: &str,
-    delta: i32,
-) -> Result<(), AppError> {
-    let now = Utc::now().to_rfc3339();
-
-    sqlx::query(
-        "UPDATE courses SET current_enrollment = current_enrollment + ?, updated_at = ? WHERE id = ?",
-    )
-    .bind(delta)
-    .bind(&now)
-    .bind(course_id)
-    .execute(pool)
-    .await?;
-
-    Ok(())
-}

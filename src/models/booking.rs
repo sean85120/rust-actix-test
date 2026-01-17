@@ -129,8 +129,6 @@ pub struct BookingQuery {
     pub member_id: Option<String>,
     pub schedule_id: Option<String>,
     pub status: Option<String>,
-    pub date_from: Option<String>,
-    pub date_to: Option<String>,
     pub page: Option<i64>,
     pub per_page: Option<i64>,
 }
@@ -141,19 +139,4 @@ pub struct BookingListResponse {
     pub total: i64,
     pub page: i64,
     pub per_page: i64,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct WaitlistResponse {
-    pub schedule_id: String,
-    pub waitlist: Vec<WaitlistEntry>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct WaitlistEntry {
-    pub booking_id: String,
-    pub member_id: String,
-    pub member_name: String,
-    pub position: i32,
-    pub booked_at: String,
 }

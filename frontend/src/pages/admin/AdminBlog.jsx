@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { blogApi } from '../../api/client';
 import Loading from '../../components/Loading';
 import Modal from '../../components/Modal';
 import '../Admin.css';
 
 const AdminBlog = () => {
+  const { t, i18n } = useTranslation();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -67,15 +69,15 @@ const AdminBlog = () => {
 
       if (isCreating) {
         await blogApi.create(postData);
-        setMessage({ type: 'success', text: 'Blog post created successfully!' });
+        setMessage({ type: 'success', text: t('admin.postCreated') });
       } else {
         await blogApi.update(selectedPost.id, postData);
-        setMessage({ type: 'success', text: 'Blog post updated successfully!' });
+        setMessage({ type: 'success', text: t('admin.postUpdated') });
       }
       setIsModalOpen(false);
       fetchPosts();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Operation failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.operationFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
@@ -83,10 +85,10 @@ const AdminBlog = () => {
   const handlePublish = async (id) => {
     try {
       await blogApi.publish(id);
-      setMessage({ type: 'success', text: 'Blog post published!' });
+      setMessage({ type: 'success', text: t('admin.postPublished') });
       fetchPosts();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Publish failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.publishFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
@@ -94,33 +96,42 @@ const AdminBlog = () => {
   const handleArchive = async (id) => {
     try {
       await blogApi.archive(id);
-      setMessage({ type: 'success', text: 'Blog post archived!' });
+      setMessage({ type: 'success', text: t('admin.postArchived') });
       fetchPosts();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Archive failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.archiveFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this blog post?')) return;
+    if (!confirm(t('admin.deleteConfirmPost'))) return;
     try {
       await blogApi.delete(id);
-      setMessage({ type: 'success', text: 'Blog post deleted!' });
+      setMessage({ type: 'success', text: t('admin.postDeleted') });
       fetchPosts();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Delete failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.deleteFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const locale = i18n.language === 'zh-TW' ? 'zh-TW' : 'en-US';
+    return new Date(dateStr).toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     });
+  };
+
+  const getCategoryLabel = (category) => {
+    return t(`blog.categories.${category}`, { defaultValue: category });
+  };
+
+  const getStatusLabel = (status) => {
+    return t(`admin.statuses.${status}`, { defaultValue: status });
   };
 
   if (loading) return <Loading />;
@@ -128,8 +139,8 @@ const AdminBlog = () => {
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <h1>Blog Posts Management</h1>
-        <button className="btn-add" onClick={handleCreate}>+ Add Post</button>
+        <h1>{t('admin.blogPostsManagement')}</h1>
+        <button className="btn-add" onClick={handleCreate}>{t('admin.addPost')}</button>
       </div>
 
       {message.text && (
@@ -140,50 +151,50 @@ const AdminBlog = () => {
         <table>
           <thead>
             <tr>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Featured</th>
-              <th>Views</th>
-              <th>Published</th>
-              <th>Actions</th>
+              <th>{t('admin.title')}</th>
+              <th>{t('admin.category')}</th>
+              <th>{t('courses.status')}</th>
+              <th>{t('admin.isFeatured')}</th>
+              <th>{t('blog.views')}</th>
+              <th>{t('admin.published')}</th>
+              <th>{t('admin.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {posts.length === 0 ? (
               <tr>
-                <td colSpan="7" className="empty-state">No blog posts found</td>
+                <td colSpan="7" className="empty-state">{t('admin.noPostsFound')}</td>
               </tr>
             ) : (
               posts.map((post) => (
                 <tr key={post.id}>
                   <td>{post.title}</td>
-                  <td>{post.category}</td>
+                  <td>{getCategoryLabel(post.category)}</td>
                   <td>
                     <span className={`status-badge ${post.status}`}>
-                      {post.status}
+                      {getStatusLabel(post.status)}
                     </span>
                   </td>
-                  <td>{post.is_featured ? 'Yes' : 'No'}</td>
+                  <td>{post.is_featured ? t('admin.yes') : t('admin.no')}</td>
                   <td>{post.view_count}</td>
                   <td>{formatDate(post.published_at)}</td>
                   <td>
                     <div className="actions">
                       <button className="btn-action edit" onClick={() => handleEdit(post)}>
-                        Edit
+                        {t('admin.edit')}
                       </button>
                       {post.status === 'draft' && (
                         <button className="btn-action publish" onClick={() => handlePublish(post.id)}>
-                          Publish
+                          {t('admin.publish')}
                         </button>
                       )}
                       {post.status === 'published' && (
                         <button className="btn-action" onClick={() => handleArchive(post.id)}>
-                          Archive
+                          {t('admin.archive')}
                         </button>
                       )}
                       <button className="btn-action delete" onClick={() => handleDelete(post.id)}>
-                        Delete
+                        {t('admin.delete')}
                       </button>
                     </div>
                   </td>
@@ -197,12 +208,12 @@ const AdminBlog = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={isCreating ? 'Create Blog Post' : 'Edit Blog Post'}
+        title={isCreating ? t('admin.createBlogPost') : t('admin.editBlogPost')}
       >
         {selectedPost && (
           <form onSubmit={handleSubmit} className="admin-form">
             <div className="form-group">
-              <label>Title</label>
+              <label>{t('admin.title')}</label>
               <input
                 type="text"
                 value={selectedPost.title}
@@ -211,16 +222,16 @@ const AdminBlog = () => {
               />
             </div>
             <div className="form-group">
-              <label>Excerpt</label>
+              <label>{t('admin.excerpt')}</label>
               <textarea
                 value={selectedPost.excerpt}
                 onChange={(e) => setSelectedPost({ ...selectedPost, excerpt: e.target.value })}
-                placeholder="Brief summary of the post"
+                placeholder={t('admin.excerptPlaceholder')}
                 style={{ minHeight: '80px' }}
               />
             </div>
             <div className="form-group">
-              <label>Content</label>
+              <label>{t('admin.content')}</label>
               <textarea
                 value={selectedPost.content}
                 onChange={(e) => setSelectedPost({ ...selectedPost, content: e.target.value })}
@@ -230,25 +241,25 @@ const AdminBlog = () => {
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label>Category</label>
+                <label>{t('admin.category')}</label>
                 <select
                   value={selectedPost.category}
                   onChange={(e) => setSelectedPost({ ...selectedPost, category: e.target.value })}
                 >
                   {categories.map((category) => (
                     <option key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                      {getCategoryLabel(category)}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="form-group">
-                <label>Tags (comma-separated)</label>
+                <label>{t('admin.tags')}</label>
                 <input
                   type="text"
                   value={selectedPost.tags}
                   onChange={(e) => setSelectedPost({ ...selectedPost, tags: e.target.value })}
-                  placeholder="boxing, fitness, tips"
+                  placeholder={t('admin.tagsPlaceholder')}
                 />
               </div>
             </div>
@@ -259,7 +270,7 @@ const AdminBlog = () => {
                 checked={selectedPost.is_featured}
                 onChange={(e) => setSelectedPost({ ...selectedPost, is_featured: e.target.checked })}
               />
-              <label htmlFor="is_featured">Featured Post</label>
+              <label htmlFor="is_featured">{t('admin.featuredPost')}</label>
             </div>
             {isCreating && (
               <div className="form-group checkbox-group">
@@ -269,15 +280,15 @@ const AdminBlog = () => {
                   checked={selectedPost.publish_immediately}
                   onChange={(e) => setSelectedPost({ ...selectedPost, publish_immediately: e.target.checked })}
                 />
-                <label htmlFor="publish_immediately">Publish Immediately</label>
+                <label htmlFor="publish_immediately">{t('admin.publishImmediately')}</label>
               </div>
             )}
             <div className="form-actions">
               <button type="button" className="btn-cancel-form" onClick={() => setIsModalOpen(false)}>
-                Cancel
+                {t('admin.cancel')}
               </button>
               <button type="submit" className="btn-save">
-                {isCreating ? 'Create' : 'Save Changes'}
+                {isCreating ? t('admin.create') : t('admin.saveChanges')}
               </button>
             </div>
           </form>

@@ -5,17 +5,34 @@
 
 .page-header {
   text-align: center;
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--space-3xl);
   position: relative;
+  padding: var(--space-xl) 0;
+}
+
+.page-header::before {
+  content: '🥊';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 15rem;
+  opacity: 0.03;
+  pointer-events: none;
 }
 
 .page-header h1 {
   font-family: var(--font-display);
-  font-size: 3rem;
-  letter-spacing: 3px;
+  font-size: 3.5rem;
+  letter-spacing: 4px;
   text-transform: uppercase;
-  color: var(--text-primary);
-  margin-bottom: var(--space-sm);
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-md);
+  position: relative;
+  animation: slideInLeft 0.6s ease;
 }
 
 .page-header h1 span {
@@ -27,9 +44,12 @@
 
 .page-header p {
   color: var(--text-secondary);
-  font-size: 1.1rem;
-  max-width: 600px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  max-width: 700px;
   margin: 0 auto;
+  position: relative;
+  animation: slideInRight 0.6s ease;
 }
 
 .filters {
@@ -77,7 +97,12 @@
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
+  animation: slideUp 0.5s ease backwards;
 }
+
+.course-card:nth-child(3n+1) { animation-delay: 0.1s; }
+.course-card:nth-child(3n+2) { animation-delay: 0.2s; }
+.course-card:nth-child(3n+3) { animation-delay: 0.3s; }
 
 .course-card::before {
   content: '';
@@ -92,10 +117,26 @@
   transition: transform var(--transition-normal);
 }
 
+.course-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(230, 57, 70, 0.08) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.course-card:hover::after {
+  opacity: 1;
+}
+
 .course-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-12px) scale(1.02);
   border-color: var(--primary-light);
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 1px rgba(230, 57, 70, 0.2),
+    var(--shadow-glow);
 }
 
 .course-card:hover::before {

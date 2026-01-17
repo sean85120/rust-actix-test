@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { membersApi } from '../../api/client';
 import Loading from '../../components/Loading';
 import Modal from '../../components/Modal';
 import '../Admin.css';
 
 const AdminMembers = () => {
+  const { t, i18n } = useTranslation();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -41,33 +43,38 @@ const AdminMembers = () => {
         phone: selectedMember.phone,
         role: selectedMember.role,
       });
-      setMessage({ type: 'success', text: 'Member updated successfully!' });
+      setMessage({ type: 'success', text: t('admin.memberUpdated') });
       setIsModalOpen(false);
       fetchMembers();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Update failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.updateFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this member?')) return;
+    if (!confirm(t('admin.deleteConfirmMember'))) return;
     try {
       await membersApi.delete(id);
-      setMessage({ type: 'success', text: 'Member deleted successfully!' });
+      setMessage({ type: 'success', text: t('admin.memberDeleted') });
       fetchMembers();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Delete failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.deleteFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
   const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const locale = i18n.language === 'zh-TW' ? 'zh-TW' : 'en-US';
+    return new Date(dateStr).toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     });
+  };
+
+  const getRoleLabel = (role) => {
+    return t(`admin.roles.${role}`, { defaultValue: role });
   };
 
   if (loading) return <Loading />;
@@ -75,7 +82,7 @@ const AdminMembers = () => {
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <h1>Members Management</h1>
+        <h1>{t('admin.membersManagement')}</h1>
       </div>
 
       {message.text && (
@@ -86,18 +93,18 @@ const AdminMembers = () => {
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Role</th>
-              <th>Joined</th>
-              <th>Actions</th>
+              <th>{t('admin.name')}</th>
+              <th>{t('admin.email')}</th>
+              <th>{t('admin.phone')}</th>
+              <th>{t('admin.role')}</th>
+              <th>{t('admin.joined')}</th>
+              <th>{t('admin.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {members.length === 0 ? (
               <tr>
-                <td colSpan="6" className="empty-state">No members found</td>
+                <td colSpan="6" className="empty-state">{t('admin.noMembersFound')}</td>
               </tr>
             ) : (
               members.map((member) => (
@@ -106,16 +113,16 @@ const AdminMembers = () => {
                   <td>{member.email}</td>
                   <td>{member.phone || '-'}</td>
                   <td>
-                    <span className={`role-badge ${member.role}`}>{member.role}</span>
+                    <span className={`role-badge ${member.role}`}>{getRoleLabel(member.role)}</span>
                   </td>
                   <td>{formatDate(member.created_at)}</td>
                   <td>
                     <div className="actions">
                       <button className="btn-action edit" onClick={() => handleEdit(member)}>
-                        Edit
+                        {t('admin.edit')}
                       </button>
                       <button className="btn-action delete" onClick={() => handleDelete(member.id)}>
-                        Delete
+                        {t('admin.delete')}
                       </button>
                     </div>
                   </td>
@@ -126,12 +133,12 @@ const AdminMembers = () => {
         </table>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Edit Member">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={t('admin.editMember')}>
         {selectedMember && (
           <form onSubmit={handleUpdate} className="admin-form">
             <div className="form-row">
               <div className="form-group">
-                <label>First Name</label>
+                <label>{t('auth.firstName')}</label>
                 <input
                   type="text"
                   value={selectedMember.first_name}
@@ -140,7 +147,7 @@ const AdminMembers = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Last Name</label>
+                <label>{t('auth.lastName')}</label>
                 <input
                   type="text"
                   value={selectedMember.last_name}
@@ -150,7 +157,7 @@ const AdminMembers = () => {
               </div>
             </div>
             <div className="form-group">
-              <label>Phone</label>
+              <label>{t('admin.phone')}</label>
               <input
                 type="tel"
                 value={selectedMember.phone || ''}
@@ -158,21 +165,21 @@ const AdminMembers = () => {
               />
             </div>
             <div className="form-group">
-              <label>Role</label>
+              <label>{t('admin.role')}</label>
               <select
                 value={selectedMember.role}
                 onChange={(e) => setSelectedMember({ ...selectedMember, role: e.target.value })}
               >
-                <option value="member">Member</option>
-                <option value="instructor">Instructor</option>
-                <option value="admin">Admin</option>
+                <option value="member">{t('admin.roles.member')}</option>
+                <option value="instructor">{t('admin.roles.instructor')}</option>
+                <option value="admin">{t('admin.roles.admin')}</option>
               </select>
             </div>
             <div className="form-actions">
               <button type="button" className="btn-cancel-form" onClick={() => setIsModalOpen(false)}>
-                Cancel
+                {t('admin.cancel')}
               </button>
-              <button type="submit" className="btn-save">Save Changes</button>
+              <button type="submit" className="btn-save">{t('admin.saveChanges')}</button>
             </div>
           </form>
         )}

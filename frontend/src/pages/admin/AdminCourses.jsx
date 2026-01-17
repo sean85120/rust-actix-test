@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { coursesApi } from '../../api/client';
 import Loading from '../../components/Loading';
 import Modal from '../../components/Modal';
 import '../Admin.css';
 
 const AdminCourses = () => {
+  const { t } = useTranslation();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -58,29 +60,37 @@ const AdminCourses = () => {
     try {
       if (isCreating) {
         await coursesApi.create(selectedCourse);
-        setMessage({ type: 'success', text: 'Course created successfully!' });
+        setMessage({ type: 'success', text: t('admin.courseCreated') });
       } else {
         await coursesApi.update(selectedCourse.id, selectedCourse);
-        setMessage({ type: 'success', text: 'Course updated successfully!' });
+        setMessage({ type: 'success', text: t('admin.courseUpdated') });
       }
       setIsModalOpen(false);
       fetchCourses();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Operation failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.operationFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this course?')) return;
+    if (!confirm(t('admin.deleteConfirmCourse'))) return;
     try {
       await coursesApi.delete(id);
-      setMessage({ type: 'success', text: 'Course deleted successfully!' });
+      setMessage({ type: 'success', text: t('admin.courseDeleted') });
       fetchCourses();
     } catch (error) {
-      setMessage({ type: 'error', text: error.response?.data?.message || 'Delete failed' });
+      setMessage({ type: 'error', text: error.response?.data?.message || t('admin.deleteFailed') });
     }
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+  };
+
+  const getCourseTypeLabel = (type) => {
+    return t(`courses.courseTypes.${type}`, { defaultValue: type.replace('_', ' ') });
+  };
+
+  const getDifficultyLabel = (level) => {
+    return t(`courses.difficultyLevels.${level}`, { defaultValue: level });
   };
 
   if (loading) return <Loading />;
@@ -88,8 +98,8 @@ const AdminCourses = () => {
   return (
     <div className="admin-page">
       <div className="admin-header">
-        <h1>Courses Management</h1>
-        <button className="btn-add" onClick={handleCreate}>+ Add Course</button>
+        <h1>{t('admin.coursesManagement')}</h1>
+        <button className="btn-add" onClick={handleCreate}>{t('admin.addCourse')}</button>
       </div>
 
       {message.text && (
@@ -100,44 +110,44 @@ const AdminCourses = () => {
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Difficulty</th>
-              <th>Duration</th>
-              <th>Capacity</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{t('admin.name')}</th>
+              <th>{t('admin.type')}</th>
+              <th>{t('admin.difficulty')}</th>
+              <th>{t('courses.duration')}</th>
+              <th>{t('courses.capacity')}</th>
+              <th>{t('courses.status')}</th>
+              <th>{t('admin.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {courses.length === 0 ? (
               <tr>
-                <td colSpan="7" className="empty-state">No courses found</td>
+                <td colSpan="7" className="empty-state">{t('admin.noCoursesFound')}</td>
               </tr>
             ) : (
               courses.map((course) => (
                 <tr key={course.id}>
                   <td>{course.name}</td>
-                  <td>{course.course_type.replace('_', ' ')}</td>
+                  <td>{getCourseTypeLabel(course.course_type)}</td>
                   <td>
                     <span className={`difficulty difficulty-${course.difficulty_level}`}>
-                      {course.difficulty_level}
+                      {getDifficultyLabel(course.difficulty_level)}
                     </span>
                   </td>
-                  <td>{course.duration_minutes} min</td>
+                  <td>{course.duration_minutes} {t('courses.min')}</td>
                   <td>{course.max_participants}</td>
                   <td>
                     <span className={`status-badge ${course.is_active ? 'active' : 'inactive'}`}>
-                      {course.is_active ? 'Active' : 'Inactive'}
+                      {course.is_active ? t('courses.active') : t('courses.inactive')}
                     </span>
                   </td>
                   <td>
                     <div className="actions">
                       <button className="btn-action edit" onClick={() => handleEdit(course)}>
-                        Edit
+                        {t('admin.edit')}
                       </button>
                       <button className="btn-action delete" onClick={() => handleDelete(course.id)}>
-                        Delete
+                        {t('admin.delete')}
                       </button>
                     </div>
                   </td>
@@ -151,12 +161,12 @@ const AdminCourses = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={isCreating ? 'Create Course' : 'Edit Course'}
+        title={isCreating ? t('admin.createCourse') : t('admin.editCourse')}
       >
         {selectedCourse && (
           <form onSubmit={handleSubmit} className="admin-form">
             <div className="form-group">
-              <label>Course Name</label>
+              <label>{t('admin.courseName')}</label>
               <input
                 type="text"
                 value={selectedCourse.name}
@@ -165,7 +175,7 @@ const AdminCourses = () => {
               />
             </div>
             <div className="form-group">
-              <label>Description</label>
+              <label>{t('admin.description')}</label>
               <textarea
                 value={selectedCourse.description}
                 onChange={(e) => setSelectedCourse({ ...selectedCourse, description: e.target.value })}
@@ -174,27 +184,27 @@ const AdminCourses = () => {
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label>Type</label>
+                <label>{t('admin.type')}</label>
                 <select
                   value={selectedCourse.course_type}
                   onChange={(e) => setSelectedCourse({ ...selectedCourse, course_type: e.target.value })}
                 >
                   {courseTypes.map((type) => (
                     <option key={type} value={type}>
-                      {type.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                      {getCourseTypeLabel(type)}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="form-group">
-                <label>Difficulty</label>
+                <label>{t('admin.difficulty')}</label>
                 <select
                   value={selectedCourse.difficulty_level}
                   onChange={(e) => setSelectedCourse({ ...selectedCourse, difficulty_level: e.target.value })}
                 >
                   {difficultyLevels.map((level) => (
                     <option key={level} value={level}>
-                      {level.charAt(0).toUpperCase() + level.slice(1)}
+                      {getDifficultyLabel(level)}
                     </option>
                   ))}
                 </select>
@@ -202,7 +212,7 @@ const AdminCourses = () => {
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label>Duration (minutes)</label>
+                <label>{t('admin.durationMinutes')}</label>
                 <input
                   type="number"
                   value={selectedCourse.duration_minutes}
@@ -213,7 +223,7 @@ const AdminCourses = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Max Participants</label>
+                <label>{t('admin.maxParticipants')}</label>
                 <input
                   type="number"
                   value={selectedCourse.max_participants}
@@ -231,14 +241,14 @@ const AdminCourses = () => {
                 checked={selectedCourse.is_active}
                 onChange={(e) => setSelectedCourse({ ...selectedCourse, is_active: e.target.checked })}
               />
-              <label htmlFor="is_active">Active</label>
+              <label htmlFor="is_active">{t('courses.active')}</label>
             </div>
             <div className="form-actions">
               <button type="button" className="btn-cancel-form" onClick={() => setIsModalOpen(false)}>
-                Cancel
+                {t('admin.cancel')}
               </button>
               <button type="submit" className="btn-save">
-                {isCreating ? 'Create' : 'Save Changes'}
+                {isCreating ? t('admin.create') : t('admin.saveChanges')}
               </button>
             </div>
           </form>

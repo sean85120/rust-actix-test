@@ -1,10 +1,13 @@
+import { useTranslation } from 'react-i18next';
 import './Loading.css';
 
-const Loading = ({ message = 'Loading...' }) => {
+const Loading = ({ message }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="loading-container">
       <div className="loading-spinner"></div>
-      <p>{message}</p>
+      <p>{message || t('common.loading')}</p>
     </div>
   );
 };

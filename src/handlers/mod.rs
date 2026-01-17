@@ -7,15 +7,6 @@ pub mod member_handler;
 pub mod membership_plan_handler;
 pub mod schedule_handler;
 
-pub use announcement_handler::*;
-pub use auth_handler::*;
-pub use blog_handler::*;
-pub use booking_handler::*;
-pub use course_handler::*;
-pub use member_handler::*;
-pub use membership_plan_handler::*;
-pub use schedule_handler::*;
-
 use actix_web::{web, HttpResponse};
 use chrono::Utc;
 

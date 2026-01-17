@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { coursesApi, schedulesApi, bookingsApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/Loading';
 import './CourseDetail.css';
 
 const CourseDetail = () => {
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -47,12 +49,12 @@ const CourseDetail = () => {
     try {
       setBookingId(scheduleId);
       await bookingsApi.create({ schedule_id: scheduleId });
-      setMessage({ type: 'success', text: 'Booking confirmed! Check your bookings for details.' });
+      setMessage({ type: 'success', text: t('courses.bookingConfirmed') });
       fetchCourseData();
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error.response?.data?.message || 'Failed to book class. Please try again.',
+        text: error.response?.data?.message || t('courses.bookingFailed'),
       });
     } finally {
       setBookingId(null);
@@ -60,7 +62,8 @@ const CourseDetail = () => {
   };
 
   const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const locale = i18n.language === 'zh-TW' ? 'zh-TW' : 'en-US';
+    return new Date(dateStr).toLocaleDateString(locale, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -76,20 +79,28 @@ const CourseDetail = () => {
     return `${hour12}:${minutes} ${ampm}`;
   };
 
+  const getCourseTypeLabel = (type) => {
+    return t(`courses.courseTypes.${type}`, { defaultValue: type.replace('_', ' ') });
+  };
+
+  const getDifficultyLabel = (level) => {
+    return t(`courses.difficultyLevels.${level}`, { defaultValue: level });
+  };
+
   if (loading) return <Loading />;
-  if (!course) return <div className="error">Course not found</div>;
+  if (!course) return <div className="error">{t('courses.courseNotFound')}</div>;
 
   return (
     <div className="course-detail">
       <button onClick={() => navigate('/courses')} className="back-btn">
-        &larr; Back to Courses
+        &larr; {t('courses.backToCourses')}
       </button>
 
       <div className="course-hero">
         <div className="course-badges">
-          <span className="course-type">{course.course_type.replace('_', ' ')}</span>
+          <span className="course-type">{getCourseTypeLabel(course.course_type)}</span>
           <span className={`difficulty difficulty-${course.difficulty_level}`}>
-            {course.difficulty_level}
+            {getDifficultyLabel(course.difficulty_level)}
           </span>
         </div>
         <h1>{course.name}</h1>
@@ -98,17 +109,17 @@ const CourseDetail = () => {
 
       <div className="course-info-grid">
         <div className="info-card">
-          <span className="info-label">Duration</span>
-          <span className="info-value">{course.duration_minutes} minutes</span>
+          <span className="info-label">{t('courses.duration')}</span>
+          <span className="info-value">{course.duration_minutes} {t('courses.minutes')}</span>
         </div>
         <div className="info-card">
-          <span className="info-label">Max Participants</span>
-          <span className="info-value">{course.max_participants} people</span>
+          <span className="info-label">{t('courses.maxParticipants')}</span>
+          <span className="info-value">{course.max_participants} {t('courses.people')}</span>
         </div>
         <div className="info-card">
-          <span className="info-label">Status</span>
+          <span className="info-label">{t('courses.status')}</span>
           <span className={`info-value status-${course.is_active ? 'active' : 'inactive'}`}>
-            {course.is_active ? 'Active' : 'Inactive'}
+            {course.is_active ? t('courses.active') : t('courses.inactive')}
           </span>
         </div>
       </div>
@@ -118,9 +129,9 @@ const CourseDetail = () => {
       )}
 
       <section className="schedules-section">
-        <h2>Upcoming Classes</h2>
+        <h2>{t('courses.upcomingClasses')}</h2>
         {schedules.length === 0 ? (
-          <p className="no-schedules">No upcoming classes scheduled for this course.</p>
+          <p className="no-schedules">{t('courses.noUpcoming')}</p>
         ) : (
           <div className="schedules-list">
             {schedules.map((schedule) => (
@@ -134,10 +145,10 @@ const CourseDetail = () => {
                 <div className="schedule-info">
                   <div className="spots">
                     <span className="spots-available">
-                      {schedule.max_participants - schedule.current_enrollment} spots left
+                      {schedule.max_participants - schedule.current_enrollment} {t('courses.spotsLeft')}
                     </span>
                     <span className="spots-total">
-                      of {schedule.max_participants}
+                      {t('courses.of')} {schedule.max_participants}
                     </span>
                   </div>
                   <div className="progress-bar">
@@ -159,12 +170,12 @@ const CourseDetail = () => {
                   className="btn-book"
                 >
                   {bookingId === schedule.id
-                    ? 'Booking...'
+                    ? t('courses.booking')
                     : schedule.status === 'cancelled'
-                    ? 'Cancelled'
+                    ? t('courses.cancelled')
                     : schedule.current_enrollment >= schedule.max_participants
-                    ? 'Full'
-                    : 'Book Now'}
+                    ? t('courses.full')
+                    : t('courses.bookNow')}
                 </button>
               </div>
             ))}

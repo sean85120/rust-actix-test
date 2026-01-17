@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { bookingsApi } from '../api/client';
 import Loading from '../components/Loading';
 import './MyBookings.css';
 
 const MyBookings = () => {
+  const { t, i18n } = useTranslation();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState(null);
@@ -28,17 +30,17 @@ const MyBookings = () => {
   };
 
   const handleCancel = async (bookingId) => {
-    if (!confirm('Are you sure you want to cancel this booking?')) return;
+    if (!confirm(t('bookings.cancelConfirm'))) return;
 
     try {
       setCancellingId(bookingId);
       await bookingsApi.cancel(bookingId);
-      setMessage({ type: 'success', text: 'Booking cancelled successfully.' });
+      setMessage({ type: 'success', text: t('bookings.cancelSuccess') });
       fetchBookings();
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error.response?.data?.message || 'Failed to cancel booking.',
+        text: error.response?.data?.message || t('bookings.cancelFailed'),
       });
     } finally {
       setCancellingId(null);
@@ -47,7 +49,8 @@ const MyBookings = () => {
   };
 
   const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const locale = i18n.language === 'zh-TW' ? 'zh-TW' : 'en-US';
+    return new Date(dateStr).toLocaleDateString(locale, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -74,6 +77,10 @@ const MyBookings = () => {
     }
   };
 
+  const getStatusLabel = (status) => {
+    return t(`bookings.statuses.${status}`, { defaultValue: status.replace('_', ' ') });
+  };
+
   const filteredBookings = bookings.filter((booking) => {
     if (filter === 'all') return true;
     if (filter === 'upcoming') return booking.status === 'confirmed';
@@ -85,8 +92,8 @@ const MyBookings = () => {
   return (
     <div className="my-bookings-page">
       <div className="page-header">
-        <h1>My Bookings</h1>
-        <p>Manage your class reservations</p>
+        <h1>{t('bookings.myBookings')}</h1>
+        <p>{t('bookings.manageReservations')}</p>
       </div>
 
       <div className="filters">
@@ -94,25 +101,25 @@ const MyBookings = () => {
           className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
           onClick={() => setFilter('all')}
         >
-          All
+          {t('bookings.all')}
         </button>
         <button
           className={`filter-btn ${filter === 'upcoming' ? 'active' : ''}`}
           onClick={() => setFilter('upcoming')}
         >
-          Upcoming
+          {t('bookings.upcoming')}
         </button>
         <button
           className={`filter-btn ${filter === 'past' ? 'active' : ''}`}
           onClick={() => setFilter('past')}
         >
-          Past
+          {t('bookings.past')}
         </button>
         <button
           className={`filter-btn ${filter === 'cancelled' ? 'active' : ''}`}
           onClick={() => setFilter('cancelled')}
         >
-          Cancelled
+          {t('bookings.cancelled')}
         </button>
       </div>
 
@@ -124,15 +131,15 @@ const MyBookings = () => {
         <Loading />
       ) : filteredBookings.length === 0 ? (
         <div className="no-bookings">
-          <p>No bookings found.</p>
-          <Link to="/schedules" className="btn-primary">Browse Classes</Link>
+          <p>{t('bookings.noBookings')}</p>
+          <Link to="/schedules" className="btn-primary">{t('bookings.browseClasses')}</Link>
         </div>
       ) : (
         <div className="bookings-list">
           {filteredBookings.map((booking) => (
             <div key={booking.id} className="booking-card">
               <div className="booking-status" style={{ backgroundColor: getStatusColor(booking.status) }}>
-                {booking.status.replace('_', ' ')}
+                {getStatusLabel(booking.status)}
               </div>
               <div className="booking-content">
                 <div className="booking-main">
@@ -146,7 +153,7 @@ const MyBookings = () => {
                     </span>
                   </div>
                   {booking.instructor_name && (
-                    <span className="instructor">Instructor: {booking.instructor_name}</span>
+                    <span className="instructor">{t('bookings.instructor')}: {booking.instructor_name}</span>
                   )}
                 </div>
                 <div className="booking-actions">
@@ -156,7 +163,7 @@ const MyBookings = () => {
                       disabled={cancellingId === booking.id}
                       className="btn-cancel"
                     >
-                      {cancellingId === booking.id ? 'Cancelling...' : 'Cancel'}
+                      {cancellingId === booking.id ? t('bookings.cancelling') : t('bookings.cancel')}
                     </button>
                   )}
                 </div>

@@ -10,6 +10,8 @@ import Register from './pages/Register';
 import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
 import Schedules from './pages/Schedules';
+import Team from './pages/Team';
+import Environment from './pages/Environment';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
 import MyBookings from './pages/MyBookings';
@@ -67,6 +69,8 @@ function App() {
             <Route path="courses" element={<Courses />} />
             <Route path="courses/:id" element={<CourseDetail />} />
             <Route path="schedules" element={<Schedules />} />
+            <Route path="team" element={<Team />} />
+            <Route path="environment" element={<Environment />} />
             <Route path="blog" element={<Blog />} />
             <Route path="blog/:slug" element={<BlogPost />} />
 

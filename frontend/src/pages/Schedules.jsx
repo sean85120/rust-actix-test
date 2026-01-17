@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { schedulesApi, bookingsApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Loading from '../components/Loading';
 import './Schedules.css';
 
 const Schedules = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [schedules, setSchedules] = useState([]);
@@ -41,12 +43,12 @@ const Schedules = () => {
     try {
       setBookingId(scheduleId);
       await bookingsApi.create({ schedule_id: scheduleId });
-      setMessage({ type: 'success', text: 'Booking confirmed!' });
+      setMessage({ type: 'success', text: t('schedule.bookingConfirmed') });
       fetchSchedules();
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error.response?.data?.message || 'Failed to book. Please try again.',
+        text: error.response?.data?.message || t('schedule.bookingFailed'),
       });
     } finally {
       setBookingId(null);
@@ -55,7 +57,8 @@ const Schedules = () => {
   };
 
   const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    const locale = i18n.language === 'zh-TW' ? 'zh-TW' : 'en-US';
+    return new Date(dateStr).toLocaleDateString(locale, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -81,8 +84,8 @@ const Schedules = () => {
   return (
     <div className="schedules-page">
       <div className="page-header">
-        <h1>Class Schedule</h1>
-        <p>View and book upcoming classes</p>
+        <h1>{t('schedule.classSchedule')}</h1>
+        <p>{t('schedule.viewAndBook')}</p>
       </div>
 
       <div className="filters">
@@ -94,7 +97,7 @@ const Schedules = () => {
         />
         {dateFilter && (
           <button onClick={() => setDateFilter('')} className="clear-filter">
-            Clear
+            {t('schedule.clear')}
           </button>
         )}
       </div>
@@ -107,7 +110,7 @@ const Schedules = () => {
         <Loading />
       ) : Object.keys(groupedSchedules).length === 0 ? (
         <div className="no-results">
-          <p>No classes scheduled.</p>
+          <p>{t('schedule.noClasses')}</p>
         </div>
       ) : (
         <div className="schedule-groups">
@@ -127,14 +130,14 @@ const Schedules = () => {
                           {schedule.course_name || 'Course'}
                         </Link>
                         <span className="instructor">
-                          with {schedule.instructor_name || 'Instructor'}
+                          {t('schedule.with')} {schedule.instructor_name || 'Instructor'}
                         </span>
                       </div>
                       <div className="schedule-capacity">
                         <span className="spots">
                           {schedule.max_participants - schedule.current_enrollment} / {schedule.max_participants}
                         </span>
-                        <span className="label">spots</span>
+                        <span className="label">{t('schedule.spots')}</span>
                       </div>
                       <button
                         onClick={() => handleBook(schedule.id)}
@@ -145,10 +148,10 @@ const Schedules = () => {
                         className="btn-book"
                       >
                         {bookingId === schedule.id
-                          ? 'Booking...'
+                          ? t('courses.booking')
                           : schedule.current_enrollment >= schedule.max_participants
-                          ? 'Full'
-                          : 'Book'}
+                          ? t('courses.full')
+                          : t('schedule.book')}
                       </button>
                     </div>
                   ))}

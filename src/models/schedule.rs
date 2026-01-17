@@ -4,47 +4,6 @@ use validator::Validate;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
-pub enum DayOfWeek {
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saturday,
-    Sunday,
-}
-
-impl From<String> for DayOfWeek {
-    fn from(s: String) -> Self {
-        match s.to_lowercase().as_str() {
-            "monday" => DayOfWeek::Monday,
-            "tuesday" => DayOfWeek::Tuesday,
-            "wednesday" => DayOfWeek::Wednesday,
-            "thursday" => DayOfWeek::Thursday,
-            "friday" => DayOfWeek::Friday,
-            "saturday" => DayOfWeek::Saturday,
-            "sunday" => DayOfWeek::Sunday,
-            _ => DayOfWeek::Monday,
-        }
-    }
-}
-
-impl ToString for DayOfWeek {
-    fn to_string(&self) -> String {
-        match self {
-            DayOfWeek::Monday => "monday".to_string(),
-            DayOfWeek::Tuesday => "tuesday".to_string(),
-            DayOfWeek::Wednesday => "wednesday".to_string(),
-            DayOfWeek::Thursday => "thursday".to_string(),
-            DayOfWeek::Friday => "friday".to_string(),
-            DayOfWeek::Saturday => "saturday".to_string(),
-            DayOfWeek::Sunday => "sunday".to_string(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "snake_case")]
 pub enum ScheduleStatus {
     Scheduled,
     Cancelled,
