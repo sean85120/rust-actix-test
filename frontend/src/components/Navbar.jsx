@@ -22,7 +22,7 @@ const Navbar = () => {
       <div className="navbar-brand">
         <Link to="/">
           <span className="brand-icon">🥊</span>
-          <span>Knockout</span>
+          <span>Rockbird</span>
         </Link>
       </div>
 

@@ -28,7 +28,7 @@
     "signIn": "登入",
     "noAccount": "還沒有帳戶？",
     "register": "註冊",
-    "joinBoxingGym": "加入拳擊健身房",
+    "joinBoxingGym": "加入搖滾鳥拳擊肌力訓練中心",
     "createAccount": "建立帳戶開始您的訓練之旅",
     "firstName": "名字",
     "lastName": "姓氏",
@@ -62,7 +62,7 @@
     "latestFromBlog": "最新部落格文章",
     "readMore": "閱讀更多",
     "whyChoose": "為什麼選擇",
-    "knockout": "Knockout",
+    "knockout": "搖滾鳥",
     "expertTrainersTitle": "專業教練",
     "expertTrainersDesc": "向擁有多年競賽經驗的職業拳擊手和認證健身教練學習。",
     "premiumEquipment": "頂級設備",
@@ -342,7 +342,7 @@
   },
   "common": {
     "loading": "載入中...",
-    "copyright": "2024 拳擊健身房 版權所有"
+    "copyright": "2024 搖滾鳥拳擊肌力訓練中心 版權所有"
   },
   "language": {
     "en": "EN",

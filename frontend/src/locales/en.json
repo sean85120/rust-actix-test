@@ -28,7 +28,7 @@
     "signIn": "Sign In",
     "noAccount": "Don't have an account?",
     "register": "Register",
-    "joinBoxingGym": "Join Boxing Gym",
+    "joinBoxingGym": "Join Rockbird Boxing",
     "createAccount": "Create your account to get started",
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -62,7 +62,7 @@
     "latestFromBlog": "Latest from the Blog",
     "readMore": "Read More",
     "whyChoose": "Why Choose",
-    "knockout": "Knockout",
+    "knockout": "Rockbird",
     "expertTrainersTitle": "Expert Trainers",
     "expertTrainersDesc": "Learn from professional boxers and certified fitness instructors with years of competitive experience.",
     "premiumEquipment": "Premium Equipment",
@@ -342,7 +342,7 @@
   },
   "common": {
     "loading": "Loading...",
-    "copyright": "2024 Boxing Gym. All rights reserved."
+    "copyright": "2024 Rockbird Boxing. All rights reserved."
   },
   "language": {
     "en": "EN",
